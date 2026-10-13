@@ -74,11 +74,13 @@ if(ti===1&&si===2){S.ce=false;S.power=S.gen=false;}
 if(ti===2){S.load=si===0?1000000:si===1?Infinity:10000}
 if(ti===3){S.v1=.02;S.v2=2;S.pos1=S.pos2=4;if(si>=2){S.vc=5;S.ve=2.6}if(si===3){S.cut=true;S.power=S.gen=false}}
 }
-function renderLesson(){const L=lessons[ti+1],step=L.steps[si];$("tabs").innerHTML="";lessons.forEach((l,i)=>{const b=document.createElement("button");b.textContent=l.name;b.className=i===ti+1?"active":"";b.onclick=()=>{clearDemo();ti=i-1;si=0;applyBefore();renderLesson()};$("tabs").appendChild(b)});$("stepcount").textContent=L.name+" · "+(si+1)+"/"+L.steps.length;$("steptitle").textContent=step[0];$("steptext").textContent=step[1];$("stepaction").textContent=step[2];$("stepwhy").textContent=step[3];$("toast").textContent="";$("prev").disabled=si===0;$("next").textContent=si===L.steps.length-1?"进入下一项 →":"下一步 →";$("demo").disabled=false;$("steps").innerHTML="";L.steps.forEach((q,i)=>{const b=document.createElement("button");b.textContent=(i+1)+". "+q[0];b.className=i===si?"active":"";b.onclick=()=>{clearDemo();si=i;applyBefore();renderLesson()};$("steps").appendChild(b)});$("datasection").hidden=ti===-1;if(ti>=0)renderData();setView(step[4]);saveProgress()}
+function renderLesson(){const L=lessons[ti+1],step=L.steps[si];$("tabs").innerHTML="";lessons.forEach((l,i)=>{const b=document.createElement("button");b.textContent=l.name;b.className=i===ti+1?"active":"";b.onclick=()=>{clearDemo();ti=i-1;si=0;applyBefore();renderLesson()};$("tabs").appendChild(b)});$("stepcount").textContent=L.name+" · "+(si+1)+"/"+L.steps.length;$("steptitle").textContent=step[0];$("steptext").textContent=step[1];$("stepaction").textContent=step[2];$("stepwhy").textContent=step[3];$("toast").textContent="";$("prev").disabled=si===0;$("next").textContent=si===L.steps.length-1?"进入下一项 →":"下一步 →";$("demo").disabled=false;$("steps").innerHTML="";L.steps.forEach((q,i)=>{const b=document.createElement("button");b.textContent=(i+1)+". "+q[0];b.className=i===si?"active":"";b.onclick=()=>{clearDemo();si=i;applyBefore();renderLesson()};$("steps").appendChild(b)});$("datasection").hidden=ti===-1;if(ti>=0)renderData();setView(step[4]);saveProgress();$("docktitle").textContent=(si+1)+"/"+L.steps.length+" · "+step[0];$("m-prev").disabled=si===0;$("m-next").textContent=si===L.steps.length-1?"下一项 →":"下一步 →";if(isSmallScreen())document.querySelector(".guide details").open=false;}
 function clearDemo(){if(timer)clearTimeout(timer);timer=null;document.querySelectorAll(".flash").forEach(e=>e.classList.remove("flash"));$("demo").disabled=false}
 function flash(id,msg){refresh();document.querySelectorAll(".flash").forEach(e=>e.classList.remove("flash"));if($(id))$(id).classList.add("flash");$("toast").textContent=msg;}
 function sequence(list){clearDemo();$("demo").disabled=true;let i=0;function tick(){const item=list[i++];if(item){item[1]();flash(item[0],item[2]);timer=setTimeout(tick,1000)}else{clearDemo();$("toast").textContent="演示完成。也可以直接点击面板练习。";refresh()}}tick()}
-function demo(){const q=lessons[ti+1].steps[si],a=q[5];
+function isSmallScreen(){return typeof matchMedia==="function"&&matchMedia("(max-width:800px)").matches;}
+function focusExperiment(){if(isSmallScreen())document.querySelector(".bench").scrollIntoView({behavior:"smooth",block:"start"});}
+function demo(){focusExperiment();const q=lessons[ti+1].steps[si],a=q[5];
 if(a==="node"){selectNode("B");$("toast").textContent="B 组的 9 孔一起亮：它们是同一个点。";return}
 if(a==="install"){S.parts=q[6];drawBoard();$("toast").textContent="已插入本步元件/导线。点击孔组核对两端。";return}
 const show=(v)=>()=>setView(v);
@@ -157,6 +159,9 @@ const blob=new Blob([csv],{type:"text/csv;charset=utf-8"}),url=URL.createObjectU
 }
 $("exportrecords").onclick=exportRecords;
 
+$("m-demo").onclick=()=>$("demo").click();
+$("m-prev").onclick=()=>{$("prev").click();document.querySelector(".guide").scrollIntoView({behavior:"smooth",block:"start"});};
+$("m-next").onclick=()=>{$("next").click();document.querySelector(".guide").scrollIntoView({behavior:"smooth",block:"start"});};
 window.selectNode=selectNode;
 $("fullboard").onclick=()=>{clearDemo();S.parts=14;drawBoard();$("boardinfo").textContent="完整接线预览。点“回到本步状态”继续逐件安装。";};
 $("restorestep").onclick=()=>{clearDemo();applyBefore();renderLesson();};
