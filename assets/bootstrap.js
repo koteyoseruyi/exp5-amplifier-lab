@@ -1,0 +1,2 @@
+window.addEventListener("error",function(e){var n=document.getElementById("loadstatus");if(n){n.hidden=false;n.textContent="页面脚本出错："+(e.message||"未知错误")+"（第 "+(e.lineno||"?")+" 行）。请把这行提示发给我。";}});
+window.addEventListener("load",function(){if("serviceWorker" in navigator&&location.protocol==="https:"){navigator.serviceWorker.register("./sw.js").catch(function(){});}});
